@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def microstrip_impedance(h, t, er, w):
+    """计算矩形微带线阻抗
+    h: 基板高度 (单位: m)
+    t: 微带线厚度 (单位: m)
+    er: 基板介电常数
+    w: 微带线宽度 (单位: m)
+    """
+    b = 0.5*(w + np.sqrt(w**2 + 12*h*t))
+    g = np.sqrt(er + 1)/2 + np.sqrt(er - 1)/2*np.sqrt(1 + 12*h/b)
+    z0 = 60/np.sqrt(er)*np.log((b/t + 1.1)*w/b + 1.11*t/b)
+    z0 *= 1/g
+    return z0
+
+def stripline_impedance(h, t, er, w):
+    """计算矩形同轴线阻抗
+    h: 基板高度 (单位: m)
+    t: 同轴线厚度 (单位: m)
+    er: 基板介电常数
+    w: 同轴线内导体宽度 (单位: m)
+    """
+    b = w + 2*t
+    a = b/2 + np.sqrt(h**2 + (b/2)**2)
+    g = np.sqrt(er + 1)/2 + np.sqrt(er - 1)/2*np.sqrt(1 + 12*h/a)
+    z0 = 60/np.sqrt(er)*np.log(2*a/b)
+    z0 *= 1/g
+    return z0
+
+def coiled_line_impedance(d, t, er, n):
+    """计算线圈电感器阻抗
+    d: 线圈直径 (单位: m)
+    t: 线径 (单位: m)
+    er: 绕线材料介电常数
+    n: 匝数
+    """
+    r_eff = d/2 + 0.5*t
+    l = 2*np.pi*r_eff*n
+    c = 2*np.pi*8.85e-12/(np.log(2*r_eff/t) - 0.75)
+    z0 = np.sqrt(l/c)
+    return z0
+
+def parallel_lines_impedance(w, s, h, er, t):
+    """计算平面双线阻抗
+    w: 线宽 (单位: m)
+    s: 两线中心距离 (单位: m)
+    h: 基板高度 (单位: m)
+    er: 基板介电常数
+    t: 线厚 (单位: m)
+    """
+    b = s + 2*w
+    g = np.sqrt(er + 1)/2 + np.sqrt(er - 1)/2*np.sqrt(1 + 12*h/b)
+    z0 = 120*np.pi/np.sqrt(er)*(1/b + 1/np.pi*np.log(4*np.pi*w/b + np.sqrt(16*np.pi**2*w**2/b**2 - 1)))
+    z0 *= 1/g
+    return z0    
